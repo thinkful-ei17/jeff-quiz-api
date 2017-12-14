@@ -1,21 +1,10 @@
 'use strict';
 /* global $ */
 
-
-
 // API Data Retrieval 
 // ===============
 
-/*Steps:
-//Main Goal: Use a public API to fetch questions and have our app us that data set instead of our static data set.
-          -questionList
-          Mainly insterting the steps of fetching the data and decorating the data.
-          -Grabbing current question, doing decoraiton piece, then render as normal
-          -At this point, a refresh of the browser = new user for application, a restart is not a new session
-          and we do retain that session token between quizzes.
-          -Sequence id at beginning of application? , Need to do certain things in the callbacks before user
-
-//Main Steps
+/* Main Steps
 1. Correctly fetch the default data - 10 questions randomized.
 2. Insert that array of objects into the current system - where questionList is 
 rendered, we render this query instead.
@@ -33,27 +22,28 @@ rendered, we render this query instead.
 
 //Set URL Components 
 
-
-
 const BASE_URL = 'https://opentdb.com/api.php?amount=10';
 const MAIN_PATH = '/api_token.php?command=request';
 const TOKEN_PATH = '/api.php';
 
-$.getJSON('https://opentdb.com/api.php?amount=10', response => {
-  console.log(response);
-});
+// $.getJSON('https://opentdb.com/api.php?amount=10', response => {
+//   console.log(response);
+// });
 
 // Build the endpoint URL
 // function buildBaseUrl() {}
 // function buildTokenUrl() {}
+// function fetchToken () {
 
-// Fetch data
-// function fetchToken() {}
+//   token - data.token;
+//   $.getJSON(BASE_URL, query, callback);
+//   return token;
+// }
 
 // Fetch Question Data from API
 function fetchQuestionDataFromApi(callback) {
   const query = {
-    amount: 30,
+    amount: 10,
   };
   $.getJSON(BASE_URL, query, callback);
 }
@@ -61,38 +51,34 @@ function fetchQuestionDataFromApi(callback) {
 //Test callback function fetchQuestionsData
 fetchQuestionDataFromApi(decorateData);
 
-
-let questionList = [];
 // Set questions array equal to our retrieved data
 function decorateData(data) {
-  console.log('data is ', data);
-  questionList = data.results;
-  // console.log(results);
-  console.log(questionList);
-  // questionList.correct_answer = 
-  console.log(questionList[0]);
-
-
+  QUESTIONS = data.results;
+  console.log(QUESTIONS[0]);
+  QUESTIONS.forEach((element) => {
+    element.answer = [...element.incorrect_answers,
+      element.correct_answer];
+  });
+  console.log(QUESTIONS);
 }
-// text: 'Capital of England?',
-// answers: ['London', 'Paris', 'Rome', 'Washington DC'],
-// correctAnswer: 'London'
 
-console.log(questionList);
+
+// function decorateQuestion (question) {
+//   const randomIndex = Math.floor(Math.random() * question.incorrect_answers);
+
+//   newQuestion.answers.splice(randomIndex, 0, question.correct_answer);
+// }
+
+// decorateQuestion(QUESTIONS);
+
+// console.log(decorateQuestion);
+
 
 // console.log(QUESTIONS);
 //Decorate questions array to represent our static array of objects with our key/value pairs (QUESTION)
 
 
 //URL Builder section
-
-
-
-// Grab data -> decorate data -> store as an array of objects -> 
-
-// let QUESTIONS = [
-
-
 
 
 
@@ -117,22 +103,24 @@ console.log(questionList);
 //   }
 // }
 
-//Use math
+
 const TOP_LEVEL_COMPONENTS = [
   'js-intro', 'js-question', 'js-question-feedback', 'js-outro', 'js-quiz-status'
 ];
 
+
+
 let QUESTIONS = [
-  {
-    text: 'Capital of England?',
-    answers: ['London', 'Paris', 'Rome', 'Washington DC'],
-    correctAnswer: 'London'
-  },
-  {
-    text: 'How many kilometers in one mile?',
-    answers: ['0.6', '1.2', '1.6', '1.8'],
-    correctAnswer: '1.6'
-  }
+  // {
+  //   text: 'Capital of England?',
+  //   answers: ['London', 'Paris', 'Rome', 'Washington DC'],
+  //   correctAnswer: 'London'
+  // },
+  // {
+  //   text: 'How many kilometers in one mile?',
+  //   answers: ['0.6', '1.2', '1.6', '1.8'],
+  //   correctAnswer: '1.6'
+  // }
 ];
 
 const getInitialStore = function() {
@@ -157,7 +145,7 @@ const getScore = function() {
   return store.userAnswers.reduce((accumulator, userAnswer, index) => {
     const question = getQuestion(index);
 
-    if (question.correctAnswer === userAnswer) {
+    if (question.correct_answer === userAnswer) {
       return accumulator + 1;
     } else {
       return accumulator;
@@ -182,9 +170,11 @@ const getQuestion = function(index) {
   return QUESTIONS[index];
 };
 
+console.log(QUESTIONS);
 // HTML generator functions
 // ========================
 const generateAnswerItemHtml = function(answer) {
+  console.log(QUESTIONS[0]);
   return `
     <li class="answer-item">
       <input type="radio" name="answers" value="${answer}" />
@@ -193,17 +183,17 @@ const generateAnswerItemHtml = function(answer) {
   `;
 };
 
-
 //Grab all the answers out of the questions
 const generateQuestionHtml = function(question) {
-  const answers = question.answers
+  console.log(question);
+  const answers = question.answer
     .map((answer, index) => generateAnswerItemHtml(answer, index))
     .join('');
 
   return `
     <form>
       <fieldset>
-        <legend class="question-text">${question.text}</legend>
+        <legend class="question-text">${question.question}</legend>
           ${answers}
           <button type="submit">Submit</button>
       </fieldset>
@@ -267,7 +257,6 @@ const handleStartQuiz = function() {
   store.page = 'question';
   store.currentQuestionIndex = 0;
   render();
-  console.log(myArray);  
 };
 
 const handleSubmitAnswer = function(e) {
@@ -276,10 +265,10 @@ const handleSubmitAnswer = function(e) {
   const selected = $('input:checked').val();
   store.userAnswers.push(selected);
 
-  if (selected === question.correctAnswer) {
+  if (selected === question.correct_answer) {
     store.feedback = 'You got it!';
   } else {
-    store.feedback = `Too bad! The correct answer was: ${question.correctAnswer}`;
+    store.feedback = `Too bad! The correct answer was: ${question.correct_answer}`;
   }
 
   store.page = 'answer';
