@@ -19,7 +19,15 @@
   <main role="main">
     <section class="intro js-intro">
       <p>Welcome to the quiz.</p>
-      <button class="start js-start">Start Now</button>
+      <form class="js-trivia-form">           
+          <label for="question_amount">Select Number of Questions: </label>
+          <select name="number" class="form-control js-question-amt" id="question_amount">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="50">50</option>
+          </select>
+      </form>
+      <button class="start js-start">Start Now</button> 
     </section>
     <section class="question js-question"></section>
     <section class="question-feedback js-question-feedback"></section>

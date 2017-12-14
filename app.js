@@ -35,21 +35,17 @@ const TOKEN_PATH = '/api.php';
 // function buildTokenUrl() {}
 // function fetchToken () {
 
-//   token - data.token;
-//   $.getJSON(BASE_URL, query, callback);
-//   return token;
-// }
+//URL Builder section
 
 // Fetch Question Data from API
-function fetchQuestionDataFromApi(callback) {
+function fetchQuestionDataFromApi(callback, questionCount) {
   const query = {
-    amount: 10,
+    amount: questionCount,
   };
   $.getJSON(BASE_URL, query, callback);
 }
 
 //Test callback function fetchQuestionsData
-fetchQuestionDataFromApi(decorateData);
 
 // Set questions array equal to our retrieved data
 function decorateData(data) {
@@ -62,65 +58,25 @@ function decorateData(data) {
   console.log(QUESTIONS);
 }
 
-
 // function decorateQuestion (question) {
 //   const randomIndex = Math.floor(Math.random() * question.incorrect_answers);
 
 //   newQuestion.answers.splice(randomIndex, 0, question.correct_answer);
 // }
 
-// decorateQuestion(QUESTIONS);
 
-// console.log(decorateQuestion);
-
-
-// console.log(QUESTIONS);
-//Decorate questions array to represent our static array of objects with our key/value pairs (QUESTION)
-
-
-//URL Builder section
-
-
-
-
-// function displayQuestionData(data) {
-//   console.log(data);
-//   // const results = data.items.map((item, index) => renderResult(item));
-//   // $('.js-search-results').html(results);
-// }
-
-// function decorateQuestion(response) {}
 
 // // Add question to store
 // function addQuestion() {}
 
 // const fetchSessionToken = () {};
 
-// const decorateQuestion = function(question) {
-//   return {
-//     text: question.question
-//     answers: 
-//   }
-// }
-
 
 const TOP_LEVEL_COMPONENTS = [
   'js-intro', 'js-question', 'js-question-feedback', 'js-outro', 'js-quiz-status'
 ];
 
-
-
 let QUESTIONS = [
-  // {
-  //   text: 'Capital of England?',
-  //   answers: ['London', 'Paris', 'Rome', 'Washington DC'],
-  //   correctAnswer: 'London'
-  // },
-  // {
-  //   text: 'How many kilometers in one mile?',
-  //   answers: ['0.6', '1.2', '1.6', '1.8'],
-  //   correctAnswer: '1.6'
-  // }
 ];
 
 const getInitialStore = function() {
@@ -252,11 +208,23 @@ const render = function() {
 
 // Event handler functions
 // =======================
+
 const handleStartQuiz = function() {
   store = getInitialStore();
   store.page = 'question';
   store.currentQuestionIndex = 0;
+  let questionCount = $('#question_amount').find(':selected').text();
+  console.log(questionCount);
   render();
+  // return questionCount;
+};
+
+
+const handleQuestionAmt = function (e) {
+  e.preventDefault();
+  // let questionCount = $('option').val();
+  let x = $('#question_amount').find(':selected').text();
+  console.log(x);
 };
 
 const handleSubmitAnswer = function(e) {
@@ -264,6 +232,7 @@ const handleSubmitAnswer = function(e) {
   const question = getCurrentQuestion();
   const selected = $('input:checked').val();
   store.userAnswers.push(selected);
+  
 
   if (selected === question.correct_answer) {
     store.feedback = 'You got it!';
@@ -287,10 +256,14 @@ const handleNextQuestion = function() {
   render();
 };
 
+
+fetchQuestionDataFromApi(decorateData);
+
 // On DOM Ready, run render() and add event listeners
 $(() => {
   render();
 
+  $('.js-trivia-form').on('submit', 'js-question-amt',  handleQuestionAmt);
   $('.js-intro, .js-outro').on('click', '.js-start', handleStartQuiz);
   $('.js-question').on('submit', handleSubmitAnswer);
   $('.js-question-feedback').on('click', '.js-continue', handleNextQuestion);
