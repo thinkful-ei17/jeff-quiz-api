@@ -1,5 +1,31 @@
 'use strict';
 
+
+
+
+// API Data Retrieval 
+// ===============
+
+const BASE_URL = 
+const TOKEN_PATH = 
+let sessionToken;
+
+const fetchSessionToken = () {};
+
+
+//Start stubbing out functions for data retrieval
+//(Get DataFromApi)
+//const decorationQuestion needs to equal our array of objects  -> convert their data
+//to your version
+
+const decorateQuestion = function(question) {
+  return {
+    text: question.question
+    answers: 
+  }
+}
+
+//Use math
 const TOP_LEVEL_COMPONENTS = [
   'js-intro', 'js-question', 'js-question-feedback', 'js-outro', 'js-quiz-status'
 ];
@@ -34,6 +60,7 @@ const hideAll = function() {
   TOP_LEVEL_COMPONENTS.forEach(component => $(`.${component}`).hide());
 };
 
+//Compare user answer to correct answer
 const getScore = function() {
   return store.userAnswers.reduce((accumulator, userAnswer, index) => {
     const question = getQuestion(index);
@@ -46,6 +73,8 @@ const getScore = function() {
   }, 0);
 };
 
+//Returns object with the current question were on and total number of questions.
+//total questions needs to change to the array of objects.
 const getProgress = function() {
   return {
     current: store.currentQuestionIndex + 1,
@@ -72,6 +101,8 @@ const generateAnswerItemHtml = function(answer) {
   `;
 };
 
+
+//Grab all the answers out of the questions
 const generateQuestionHtml = function(question) {
   const answers = question.answers
     .map((answer, index) => generateAnswerItemHtml(answer, index))
@@ -99,7 +130,7 @@ const generateFeedbackHtml = function(feedback) {
 // ===============
 const render = function() {
   let html;
-  hideAll();
+  hideAll(); //Hide all views first, then show what we need.
 
   const question = getCurrentQuestion();
   const { feedback } = store;
@@ -109,31 +140,31 @@ const render = function() {
   $('.js-progress').html(`<span>Question ${current} of ${total}`);
 
   switch (store.page) {
-    case 'intro':
-      $('.js-intro').show();
-      break;
+  case 'intro':
+    $('.js-intro').show();
+    break;
 
-    case 'question':
-      html = generateQuestionHtml(question);
-      $('.js-question').html(html);
-      $('.js-question').show();
-      $('.quiz-status').show();
-      break;
+  case 'question':
+    html = generateQuestionHtml(question);
+    $('.js-question').html(html);
+    $('.js-question').show();
+    $('.quiz-status').show();
+    break;
 
-    case 'answer':
-      html = generateFeedbackHtml(feedback);
-      $('.js-question-feedback').html(html);
-      $('.js-question-feedback').show();
-      $('.quiz-status').show();
-      break;
+  case 'answer':
+    html = generateFeedbackHtml(feedback);
+    $('.js-question-feedback').html(html);
+    $('.js-question-feedback').show();
+    $('.quiz-status').show();
+    break;
 
-    case 'outro':
-      $('.js-outro').show();
-      $('.quiz-status').show();
-      break;
+  case 'outro':
+    $('.js-outro').show();
+    $('.quiz-status').show();
+    break;
 
-    default:
-      return;
+  default:
+    return;
   }
 };
 
