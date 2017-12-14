@@ -1,36 +1,128 @@
 'use strict';
-
+/* global $ */
 
 
 
 // API Data Retrieval 
 // ===============
 
-const BASE_URL = 
-const TOKEN_PATH = 
-let sessionToken;
+/*Steps:
+//Main Goal: Use a public API to fetch questions and have our app us that data set instead of our static data set.
+          -questionList
+          Mainly insterting the steps of fetching the data and decorating the data.
+          -Grabbing current question, doing decoraiton piece, then render as normal
+          -At this point, a refresh of the browser = new user for application, a restart is not a new session
+          and we do retain that session token between quizzes.
+          -Sequence id at beginning of application? , Need to do certain things in the callbacks before user
 
-const fetchSessionToken = () {};
+//Main Steps
+1. Correctly fetch the default data - 10 questions randomized.
+2. Insert that array of objects into the current system - where questionList is 
+rendered, we render this query instead.
+3. Once that works, build out each requirement:
+  4. User should be asked a number of questions for quiz sessions before beginning
+    -Add a button click listener in a form.
+    -It's input type 'number', with a min of '1' and a max of '50', a value of '10'
+    as default.  We capture that value and change the amount key value pair in query
+  5. User should not receieve a duplicate question durin their entire session.
+    -Confirm the session token we plugged in works as a key value pair in query.
+  6. User can select a single category of questions
+    -Click listener -> Grab ID Value -> insert into query -> decorate and generate
+    query based on that ID.
+    */
+
+//Set URL Components 
 
 
-//Start stubbing out functions for data retrieval
-//(Get DataFromApi)
-//const decorationQuestion needs to equal our array of objects  -> convert their data
-//to your version
 
-const decorateQuestion = function(question) {
-  return {
-    text: question.question
-    answers: 
-  }
+const BASE_URL = 'https://opentdb.com/api.php?amount=10';
+const MAIN_PATH = '/api_token.php?command=request';
+const TOKEN_PATH = '/api.php';
+
+$.getJSON('https://opentdb.com/api.php?amount=10', response => {
+  console.log(response);
+});
+
+// Build the endpoint URL
+// function buildBaseUrl() {}
+// function buildTokenUrl() {}
+
+// Fetch data
+// function fetchToken() {}
+
+// Fetch Question Data from API
+function fetchQuestionDataFromApi(callback) {
+  const query = {
+    amount: 30,
+  };
+  $.getJSON(BASE_URL, query, callback);
 }
+
+//Test callback function fetchQuestionsData
+fetchQuestionDataFromApi(decorateData);
+
+
+let questionList = [];
+// Set questions array equal to our retrieved data
+function decorateData(data) {
+  console.log('data is ', data);
+  questionList = data.results;
+  // console.log(results);
+  console.log(questionList);
+  // questionList.correct_answer = 
+  console.log(questionList[0]);
+
+
+}
+// text: 'Capital of England?',
+// answers: ['London', 'Paris', 'Rome', 'Washington DC'],
+// correctAnswer: 'London'
+
+console.log(questionList);
+
+// console.log(QUESTIONS);
+//Decorate questions array to represent our static array of objects with our key/value pairs (QUESTION)
+
+
+//URL Builder section
+
+
+
+// Grab data -> decorate data -> store as an array of objects -> 
+
+// let QUESTIONS = [
+
+
+
+
+
+
+// function displayQuestionData(data) {
+//   console.log(data);
+//   // const results = data.items.map((item, index) => renderResult(item));
+//   // $('.js-search-results').html(results);
+// }
+
+// function decorateQuestion(response) {}
+
+// // Add question to store
+// function addQuestion() {}
+
+// const fetchSessionToken = () {};
+
+// const decorateQuestion = function(question) {
+//   return {
+//     text: question.question
+//     answers: 
+//   }
+// }
 
 //Use math
 const TOP_LEVEL_COMPONENTS = [
   'js-intro', 'js-question', 'js-question-feedback', 'js-outro', 'js-quiz-status'
 ];
 
-const QUESTIONS = [
+let QUESTIONS = [
   {
     text: 'Capital of England?',
     answers: ['London', 'Paris', 'Rome', 'Washington DC'],
@@ -175,6 +267,7 @@ const handleStartQuiz = function() {
   store.page = 'question';
   store.currentQuestionIndex = 0;
   render();
+  console.log(myArray);  
 };
 
 const handleSubmitAnswer = function(e) {
